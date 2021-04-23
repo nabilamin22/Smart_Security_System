@@ -1,0 +1,117 @@
+;MUHAMMAD NABIL BIN SAIFUL AMIN;
+;DE96558;
+;MICROCONTROLLER AND INTERFACING LAB;
+;EEED253;
+;UNITEN;
+;FINAL PROJECT;
+
+;-----------------------------------;
+;PROJECT CODING
+;-----------------------------------;
+#include<p18F4550.inc>
+
+;-----------------------------------;
+;ASSEMBLER DIRECTIVES 
+;-----------------------------------;			
+loop_cnt1	set	0x00
+loop_cnt2	set 0x01
+			
+			org	0x00
+			goto start
+			org	0x08
+			retfie
+			org	0x18
+			retfie
+
+;-----------------------------------;
+;MACRO CODING 
+;-----------------------------------;			
+dup_nop	macro	kk
+		variable i
+i = 0
+		while i < kk
+		nop
+i += 1
+		endw
+		endm
+
+;-----------------------------------;
+;DELAY FOR 0.5 SECONDS
+;-----------------------------------;
+DELAY0.5	MOVLW D'40'
+			MOVWF loop_cnt2, A
+AGAIN1		MOVLW D'250'
+			MOVWF loop_cnt1, A
+AGAIN2		dup_nop D'247'
+			DECFSZ loop_cnt1, F, A
+			BRA AGAIN2
+			DECFSZ loop_cnt2, F, A
+			BRA	AGAIN1
+			NOP
+			RETURN
+	
+;-----------------------------------;
+;SUBROUTINE FOR SW1
+;-----------------------------------;
+SW1		BSF 	PORTD, 7, A
+		CALL	DELAY0.5
+		MOVLW 	0X07
+		MOVWF 	PRODL, A
+
+;-----------------------------------;
+;SUBROUTINE FOR SW2
+;-----------------------------------;
+SW2		RRNCF 	PORTD, F, A
+		CALL	BUZZER
+		CALL 	DELAY0.5
+		DECFSZ 	PRODL, F, A
+		BRA 	SW2 
+		CLRF 	PORTD, A
+		BRA 	AGAIN
+		RETURN
+	
+;-----------------------------------;
+;SUBROUTINE FOR BUZZER
+;-----------------------------------;	
+BUZZER	BSF 	PORTC,2, A
+		CALL 	DELAY0.5
+		BCF		PORTC,2,A
+		RETURN
+		
+;-----------------------------------;
+;MAIN PROGRAM
+;-----------------------------------;		
+start	SETF 	TRISB, A
+		CLRF 	TRISD, A
+		CLRF 	PORTD, A
+		BCF 	TRISC,2, A
+		BCF		PORTC,2, A
+AGAIN	BTFSS 	PORTB, 0
+		CALL 	SW1
+		BTFSC 	PORTB,1
+		BRA		AGAIN
+		SETF 	PORTD, A
+		CALL 	DELAY0.5
+		CALL 	DELAY0.5
+		CLRF	PORTD, A
+		CALL	BUZZER
+		SETF 	PORTD, A
+		CALL 	DELAY0.5
+		CALL 	DELAY0.5
+		CLRF	PORTD, A
+		CALL	BUZZER
+		SETF 	PORTD, A
+		CALL 	DELAY0.5
+		CALL 	DELAY0.5
+		CLRF	PORTD, A
+		CALL	BUZZER
+		SETF 	PORTD, A
+		CALL 	DELAY0.5
+		CALL 	DELAY0.5
+		CLRF	PORTD, A
+		CALL	BUZZER
+		CLRF 	PORTD, A
+		CALL 	DELAY0.5
+		BRA 	AGAIN
+		NOP
+		END
